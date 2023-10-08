@@ -73,6 +73,7 @@ class RegisterView extends HookConsumerWidget {
     );
   }
 
+  @visibleForTesting
   void register(
     BuildContext context,
     WidgetRef ref,
@@ -83,29 +84,26 @@ class RegisterView extends HookConsumerWidget {
     if (!formKey.currentState!.validate()) {
       return;
     }
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-      content: Text("ログインしました"),
-    ));
-    // final String registerResult =
-    //     await ref.read(authControllerProvider.notifier).register(
-    //           email: email,
-    //           password: password,
-    //         );
-    // if (registerResult == 'success') {
-    //   if (context.mounted) {
-    //     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-    //       content: Text("ログインしました"),
-    //     ));
-    //     context.goNamed(AppRoute.todo.name);
-    //   }
-    // } else {
-    //   if (context.mounted) {
-    //     showOkAlertDialog(
-    //       context: context,
-    //       title: "エラー",
-    //       message: registerResult,
-    //     );
-    //   }
-    // }
+    final String registerResult =
+        await ref.read(authControllerProvider.notifier).register(
+              email: email,
+              password: password,
+            );
+    if (registerResult == 'success') {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text("ログインしました"),
+        ));
+        context.goNamed(AppRoute.todo.name);
+      }
+    } else {
+      if (context.mounted) {
+        showOkAlertDialog(
+          context: context,
+          title: "エラー",
+          message: registerResult,
+        );
+      }
+    }
   }
 }

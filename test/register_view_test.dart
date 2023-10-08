@@ -4,9 +4,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 void main() {
-  group("Unitテスト", () {
-    test("", () => null);
-  });
   group("Widgetテスト", () {
     group("正常系", () {
       testWidgets("全てのフォームの入力形式が正しい場合、ボタンを押すと会員登録成功メッセージが出る",
