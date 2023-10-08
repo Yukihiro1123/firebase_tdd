@@ -92,7 +92,7 @@ class RegisterView extends HookConsumerWidget {
     if (registerResult == 'success') {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text("ログインしました"),
+          content: Text("会員登録完了"),
         ));
         context.goNamed(AppRoute.todo.name);
       }
@@ -104,6 +104,7 @@ class RegisterView extends HookConsumerWidget {
           message: registerResult,
         );
       }
+      return;
     }
   }
 }

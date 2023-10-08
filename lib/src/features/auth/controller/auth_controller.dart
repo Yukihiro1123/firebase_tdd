@@ -9,6 +9,18 @@ class AuthController extends _$AuthController {
     return const AsyncData(null);
   }
 
+  Future<String> signIn({
+    required String email,
+    required String password,
+  }) async {
+    state = const AsyncLoading();
+    final String result = await ref
+        .read(authRepositoryProvider.notifier)
+        .signIn(email: email, password: password);
+    state = const AsyncData(null);
+    return result;
+  }
+
   Future<String> register({
     required String email,
     required String password,

@@ -1,4 +1,4 @@
-import 'package:firebase_tdd/src/features/auth/view/register_view.dart';
+import 'package:firebase_tdd/src/features/auth/view/login_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -12,43 +12,43 @@ void main() {
             child: MaterialApp(
               home: Material(
                 child: Scaffold(
-                  body: RegisterView(),
+                  body: LoginView(),
                 ),
               ),
             ),
           ),
         );
         await widgetTester.pumpAndSettle();
-        final emailForm = find.byKey(const Key("registerEmailForm"));
-        final passwordForm = find.byKey(const Key("registerPasswordForm"));
-        final registerButton = find.byKey(const Key("registerButton"));
+        final emailForm = find.byKey(const Key("loginEmailForm"));
+        final passwordForm = find.byKey(const Key("loginPasswordForm"));
+        final loginButton = find.byKey(const Key("loginButton"));
         await widgetTester.pumpAndSettle();
         expect(emailForm, findsOneWidget);
         expect(passwordForm, findsOneWidget);
-        expect(registerButton, findsOneWidget);
+        expect(loginButton, findsOneWidget);
       });
-      testWidgets("全てのフォームの入力形式が正しい場合、エラーは出ない", (widgetTester) async {
+      testWidgets("全てのフォームの入力形式が正しい場合はエラーは出ない", (widgetTester) async {
         await widgetTester.pumpWidget(
           const ProviderScope(
             child: MaterialApp(
               home: Material(
                 child: Scaffold(
-                  body: RegisterView(),
+                  body: LoginView(),
                 ),
               ),
             ),
           ),
         );
         await widgetTester.pumpAndSettle();
-        final emailForm = find.byKey(const Key("registerEmailForm"));
+        final emailForm = find.byKey(const Key("loginEmailForm"));
         await widgetTester.enterText(emailForm, 'example@gmail.com');
-        final passwordForm = find.byKey(const Key("registerPasswordForm"));
+        final passwordForm = find.byKey(const Key("loginPasswordForm"));
         await widgetTester.enterText(passwordForm, 'example12345');
-        await widgetTester.tap(find.byKey(const Key("registerButton")));
+        await widgetTester.tap(find.byKey(const Key("loginButton")));
         await widgetTester.pumpAndSettle();
         expect(find.text('メールアドレスの形式が正しくありません'), findsNothing);
-        expect(find.text('8文字以上の英数字を入力してください'), findsNothing);
-        // expect(find.text('会員登録完了'), findsOneWidget);
+        expect(find.text('入力してください'), findsNothing);
+        // expect(find.text('ログインしました'), findsOneWidget);
       });
     });
     group("異常系", () {
@@ -57,20 +57,18 @@ void main() {
           const ProviderScope(
             child: MaterialApp(
               home: Material(
-                child: RegisterView(),
+                child: LoginView(),
               ),
             ),
           ),
         );
         await widgetTester.pumpAndSettle();
-        final emailForm = find.byKey(const Key("registerEmailForm"));
+        final emailForm = find.byKey(const Key("loginEmailForm"));
         await widgetTester.enterText(emailForm, '犬');
-        final passwordForm = find.byKey(const Key("registerPasswordForm"));
-        await widgetTester.enterText(passwordForm, '犬');
-        await widgetTester.tap(find.byKey(const Key("registerButton")));
+        await widgetTester.tap(find.byKey(const Key("loginButton")));
         await widgetTester.pumpAndSettle();
         expect(find.text('メールアドレスの形式が正しくありません'), findsOneWidget);
-        expect(find.text('8文字以上の英数字を入力してください'), findsOneWidget);
+        expect(find.text('入力してください'), findsOneWidget);
       });
     });
   });
