@@ -1,6 +1,8 @@
 import 'package:firebase_tdd/src/features/auth/controller/current_user_controller.dart';
+import 'package:firebase_tdd/src/features/auth/repository/auth_repository.dart';
 import 'package:firebase_tdd/src/features/auth/view/auth_page.dart';
 import 'package:firebase_tdd/src/features/todo/view/todo_list_page.dart';
+import 'package:firebase_tdd/src/routing/go_router_refresh_stream.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -15,6 +17,9 @@ GoRouter goRouter(GoRouterRef ref) {
     navigatorKey: rootNavigatorKey,
     debugLogDiagnostics: true,
     initialLocation: AppRoute.auth.path,
+    refreshListenable: GoRouterRefreshStream(
+      ref.watch(authRepositoryProvider.notifier).authStateChange(),
+    ),
     redirect: (context, state) {
       if (ref.read(currentUserControllerProvider) == null) {
         return AppRoute.auth.path;

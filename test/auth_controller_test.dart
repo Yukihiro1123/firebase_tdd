@@ -112,4 +112,13 @@ void main() {
       });
     });
   });
+
+  group('ログアウト処理', () {
+    test('ログアウトに成功するとcurrentUserがnullになること', () async {
+      await container.read(authControllerProvider.notifier).signOut();
+      final currentUser =
+          container.read(firebaseAuthInstanceProvider).currentUser;
+      expect(currentUser?.email, null);
+    });
+  });
 }
