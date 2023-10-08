@@ -1,3 +1,4 @@
+import 'package:firebase_tdd/src/features/auth/controller/current_user_controller.dart';
 import 'package:firebase_tdd/src/features/auth/view/auth_page.dart';
 import 'package:firebase_tdd/src/features/todo/view/todo_list_page.dart';
 import 'package:flutter/material.dart';
