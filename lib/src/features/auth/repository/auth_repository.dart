@@ -12,6 +12,23 @@ class AuthRepository extends _$AuthRepository {
     return ref.watch(firebaseAuthInstanceProvider).currentUser;
   }
 
+  Future<String> signIn({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      await ref
+          .read(firebaseAuthInstanceProvider)
+          .signInWithEmailAndPassword(email: email, password: password);
+      state = ref.read(firebaseAuthInstanceProvider).currentUser;
+      return 'success';
+    } on FirebaseAuthException catch (e) {
+      return FirebaseAuthErrorExt.fromCode(e.code).message;
+    } catch (e) {
+      return 'error';
+    }
+  }
+
   Future<String> register({
     required String email,
     required String password,
