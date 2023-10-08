@@ -45,4 +45,19 @@ class AuthRepository extends _$AuthRepository {
       return 'error';
     }
   }
+
+  Future<void> signOut() async {
+    await ref.read(firebaseAuthInstanceProvider).signOut();
+    state = ref.read(firebaseAuthInstanceProvider).currentUser;
+  }
+
+  Stream<User?> authStateChange() {
+    return ref
+        .read(firebaseAuthInstanceProvider)
+        .authStateChanges()
+        .map((User? currentUser) {
+      state = currentUser;
+      return state;
+    });
+  }
 }

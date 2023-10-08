@@ -32,4 +32,10 @@ class AuthController extends _$AuthController {
     state = const AsyncData(null);
     return result;
   }
+
+  Future<void> signOut() async {
+    state = const AsyncLoading();
+    await ref.read(authRepositoryProvider.notifier).signOut();
+    state = const AsyncData(null);
+  }
 }
