@@ -15,9 +15,9 @@ GoRouter goRouter(GoRouterRef ref) {
     debugLogDiagnostics: true,
     initialLocation: AppRoute.auth.path,
     redirect: (context, state) {
-      // if (ref.read(currentUserControllerProvider) == null) {
-      //   return AppRoute.auth.path;
-      // }
+      if (ref.read(currentUserControllerProvider) == null) {
+        return AppRoute.auth.path;
+      }
       return null;
     },
     routes: [
