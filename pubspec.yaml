@@ -1,0 +1,39 @@
+name: firebase_tdd
+description: A new Flutter project.
+publish_to: "none"
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.1.2 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.2
+  flutter_hooks:
+  freezed:
+  freezed_annotation:
+  go_router:
+  hooks_riverpod:
+  json_annotation:
+  riverpod_annotation:
+  riverpod_generator:
+  riverpod_lint:
+  firebase_core:
+  firebase_auth:
+  cloud_firestore:
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+  json_serializable:
+  freeze:
+  build_runner:
+  mockito:
+  mocktail:
+
+flutter:
+  uses-material-design: true
