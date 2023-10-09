@@ -19,9 +19,10 @@ class TodoRepository extends _$TodoRepository {
         );
   }
 
-  Stream<List<Todo>> watchTodos() {
+  Stream<List<Todo>> watchTodos(int limit) {
     return state
         .orderBy(FirebaseTodosKey.createdAt, descending: true)
+        .limit(limit)
         .snapshots()
         .map(
       (QuerySnapshot<Todo> snapshot) {

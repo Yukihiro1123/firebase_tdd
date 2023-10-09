@@ -1,7 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:firebase_tdd/config/firebase/firebase_instance_provider.dart';
 import 'package:firebase_tdd/config/util/firebase_key.dart';
 import 'package:firebase_tdd/src/features/todo/controller/todo_controller.dart';
@@ -44,9 +42,7 @@ void main() {
 
   //group: テストケースをグループごとにまとめる
 
-  group('Todo取得処理', () {
-    test('', () async {});
-  });
+  group('Todo取得処理', () {});
   //TODO ソートのテスト
   group('Todo追加処理', () {
     test('データ追加処理を行った後追加したデータが取得できる', () async {

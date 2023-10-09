@@ -40,3 +40,22 @@ class TodoController extends _$TodoController {
     state = const AsyncData(null);
   }
 }
+
+@riverpod
+Stream<List<Todo>> watchTodoListController(WatchTodoListControllerRef ref) {
+  final int todoListLimit = ref.watch(todoListLimitControllerProvider);
+  return ref.read(todoRepositoryProvider.notifier).watchTodos(todoListLimit);
+}
+
+@riverpod
+class TodoListLimitController extends _$TodoListLimitController {
+  @override
+  int build() {
+    return 20;
+  }
+
+  //limitを+20する
+  void increment() {
+    state = state + 20;
+  }
+}
