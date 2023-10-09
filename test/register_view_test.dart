@@ -31,26 +31,30 @@ void main() {
       reset(mockAuthController);
     });
     group("異常系", () {
+      testWidgets("メールアドレスのフォーマットが正しくない場合はエラーメッセージを返す", (widgetTester) async {
+        //Widget のインスタンスを生成する
+        await widgetTester.pumpWidget(providerScope);
+        //インスタンスの生成を待つ
+        await widgetTester.pumpAndSettle();
+        //メアドフォームを検出する
+        final emailForm = find.byKey(const Key("registerEmailForm"));
+        //メアドを入力
+        await widgetTester.enterText(emailForm, '犬');
+        await widgetTester.tap(find.byKey(const Key("registerButton")));
+        await widgetTester.pumpAndSettle();
+        //メアド、パスワードの要件を満たしていないためバリデーションエラーのメッセージが出ることを検証
+        expect(find.text('メールアドレスの形式が正しくありません'), findsOneWidget);
+        expect(find.text('8文字以上の英数字を入力してください'), findsOneWidget);
+        await widgetTester.enterText(emailForm, '犬');
+        //バリデーションエラーが発生しているためcontrollerは呼び出されないことを検証
+        verifyNever(() => mockAuthController.signIn(
+            email: "example@gmail.com", password: "example12345"));
+      });
       group("パスワードバリデーション", () {
         const zenkakuPassword = "abcあ1234";
         const numberOnlyPassword = "12345678";
         const charOnlyPassword = "abcdefgh";
         const shortPassword = "abc1234";
-        testWidgets("入力された値のフォーマットが正しくない場合はエラーメッセージを返す", (widgetTester) async {
-          await widgetTester.pumpWidget(providerScope);
-          await widgetTester.pumpAndSettle();
-          final emailForm = find.byKey(const Key("registerEmailForm"));
-          await widgetTester.enterText(emailForm, '犬');
-          final passwordForm = find.byKey(const Key("registerPasswordForm"));
-          await widgetTester.enterText(passwordForm, '犬');
-          await widgetTester.tap(find.byKey(const Key("registerButton")));
-          await widgetTester.pumpAndSettle();
-          expect(find.text('メールアドレスの形式が正しくありません'), findsOneWidget);
-          expect(find.text('8文字以上の英数字を入力してください'), findsOneWidget);
-          await widgetTester.enterText(emailForm, '犬');
-          verifyNever(() => mockAuthController.signIn(
-              email: "example@gmail.com", password: "example12345"));
-        });
 
         testWidgets("パスワードが全角を含む場合エラーを返す", (widgetTester) async {
           await widgetTester.pumpWidget(providerScope);
@@ -111,7 +115,6 @@ void main() {
               email: "example@gmail.com", password: "example12345"));
         });
       });
-
       testWidgets("ユーザーが既に登録されている場合エラーメッセージを返す", (widgetTester) async {
         when(() => mockAuthController.register(
                 email: any(named: "email"), password: any(named: "password")))
