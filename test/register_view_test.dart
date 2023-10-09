@@ -11,6 +11,7 @@ class MockAuthController extends AutoDisposeNotifier<AsyncValue<dynamic>>
     implements AuthController {}
 
 void main() {
+  const testEmail = "example@gmail.com";
   group("Widgetテスト", () {
     late MockAuthController mockAuthController;
     late ProviderScope providerScope;
@@ -30,19 +31,85 @@ void main() {
       reset(mockAuthController);
     });
     group("異常系", () {
-      testWidgets("入力された値のフォーマットが正しくない場合はエラーメッセージを返す", (widgetTester) async {
-        await widgetTester.pumpWidget(providerScope);
-        await widgetTester.pumpAndSettle();
-        final emailForm = find.byKey(const Key("registerEmailForm"));
-        await widgetTester.enterText(emailForm, '犬');
-        final passwordForm = find.byKey(const Key("registerPasswordForm"));
-        await widgetTester.enterText(passwordForm, '犬');
-        await widgetTester.tap(find.byKey(const Key("registerButton")));
-        await widgetTester.pumpAndSettle();
-        expect(find.text('メールアドレスの形式が正しくありません'), findsOneWidget);
-        expect(find.text('8文字以上の英数字を入力してください'), findsOneWidget);
-        verifyNever(() => mockAuthController.signIn(
-            email: "example@gmail.com", password: "example12345"));
+      group("パスワードバリデーション", () {
+        const zenkakuPassword = "abcあ1234";
+        const numberOnlyPassword = "12345678";
+        const charOnlyPassword = "abcdefgh";
+        const shortPassword = "abc1234";
+        testWidgets("入力された値のフォーマットが正しくない場合はエラーメッセージを返す", (widgetTester) async {
+          await widgetTester.pumpWidget(providerScope);
+          await widgetTester.pumpAndSettle();
+          final emailForm = find.byKey(const Key("registerEmailForm"));
+          await widgetTester.enterText(emailForm, '犬');
+          final passwordForm = find.byKey(const Key("registerPasswordForm"));
+          await widgetTester.enterText(passwordForm, '犬');
+          await widgetTester.tap(find.byKey(const Key("registerButton")));
+          await widgetTester.pumpAndSettle();
+          expect(find.text('メールアドレスの形式が正しくありません'), findsOneWidget);
+          expect(find.text('8文字以上の英数字を入力してください'), findsOneWidget);
+          await widgetTester.enterText(emailForm, '犬');
+          verifyNever(() => mockAuthController.signIn(
+              email: "example@gmail.com", password: "example12345"));
+        });
+
+        testWidgets("パスワードが全角を含む場合エラーを返す", (widgetTester) async {
+          await widgetTester.pumpWidget(providerScope);
+          await widgetTester.pumpAndSettle();
+          final emailForm = find.byKey(const Key("registerEmailForm"));
+          await widgetTester.enterText(emailForm, testEmail);
+          final passwordForm = find.byKey(const Key("registerPasswordForm"));
+          await widgetTester.enterText(passwordForm, zenkakuPassword);
+          await widgetTester.tap(find.byKey(const Key("registerButton")));
+          await widgetTester.pumpAndSettle();
+          expect(find.text('メールアドレスの形式が正しくありません'), findsNothing);
+          expect(find.text('8文字以上の英数字を入力してください'), findsOneWidget);
+          verifyNever(() => mockAuthController.signIn(
+              email: "example@gmail.com", password: "example12345"));
+        });
+        testWidgets("パスワードが短い場合エラーを返す", (widgetTester) async {
+          await widgetTester.pumpWidget(providerScope);
+          await widgetTester.pumpAndSettle();
+          final emailForm = find.byKey(const Key("registerEmailForm"));
+          await widgetTester.enterText(emailForm, testEmail);
+          final passwordForm = find.byKey(const Key("registerPasswordForm"));
+          await widgetTester.enterText(passwordForm, shortPassword);
+          await widgetTester.tap(find.byKey(const Key("registerButton")));
+          await widgetTester.pumpAndSettle();
+          expect(find.text('メールアドレスの形式が正しくありません'), findsNothing);
+          expect(find.text('8文字以上の英数字を入力してください'), findsOneWidget);
+          verifyNever(() => mockAuthController.signIn(
+              email: "example@gmail.com", password: "example12345"));
+        });
+
+        testWidgets("パスワードが英字のみの場合エラーを返す", (widgetTester) async {
+          await widgetTester.pumpWidget(providerScope);
+          await widgetTester.pumpAndSettle();
+          final emailForm = find.byKey(const Key("registerEmailForm"));
+          await widgetTester.enterText(emailForm, testEmail);
+          final passwordForm = find.byKey(const Key("registerPasswordForm"));
+          await widgetTester.enterText(passwordForm, charOnlyPassword);
+          await widgetTester.tap(find.byKey(const Key("registerButton")));
+          await widgetTester.pumpAndSettle();
+          expect(find.text('メールアドレスの形式が正しくありません'), findsNothing);
+          expect(find.text('8文字以上の英数字を入力してください'), findsOneWidget);
+          verifyNever(() => mockAuthController.signIn(
+              email: "example@gmail.com", password: "example12345"));
+        });
+
+        testWidgets("パスワードが数字のみの場合エラーを返す", (widgetTester) async {
+          await widgetTester.pumpWidget(providerScope);
+          await widgetTester.pumpAndSettle();
+          final emailForm = find.byKey(const Key("registerEmailForm"));
+          await widgetTester.enterText(emailForm, testEmail);
+          final passwordForm = find.byKey(const Key("registerPasswordForm"));
+          await widgetTester.enterText(passwordForm, numberOnlyPassword);
+          await widgetTester.tap(find.byKey(const Key("registerButton")));
+          await widgetTester.pumpAndSettle();
+          expect(find.text('メールアドレスの形式が正しくありません'), findsNothing);
+          expect(find.text('8文字以上の英数字を入力してください'), findsOneWidget);
+          verifyNever(() => mockAuthController.signIn(
+              email: "example@gmail.com", password: "example12345"));
+        });
       });
 
       testWidgets("ユーザーが既に登録されている場合エラーメッセージを返す", (widgetTester) async {
@@ -52,7 +119,7 @@ void main() {
         await widgetTester.pumpWidget(providerScope);
         await widgetTester.pumpAndSettle();
         final emailForm = find.byKey(const Key("registerEmailForm"));
-        await widgetTester.enterText(emailForm, 'example@gmail.com');
+        await widgetTester.enterText(emailForm, testEmail);
         final passwordForm = find.byKey(const Key("registerPasswordForm"));
         await widgetTester.enterText(passwordForm, 'example12345');
         await widgetTester.tap(find.byKey(const Key("registerButton")));
@@ -80,7 +147,7 @@ void main() {
         await widgetTester.pumpWidget(providerScope);
         await widgetTester.pumpAndSettle();
         final emailForm = find.byKey(const Key("registerEmailForm"));
-        await widgetTester.enterText(emailForm, 'example@gmail.com');
+        await widgetTester.enterText(emailForm, testEmail);
         final passwordForm = find.byKey(const Key("registerPasswordForm"));
         await widgetTester.enterText(passwordForm, 'example12345');
         await widgetTester.tap(find.byKey(const Key("registerButton")));
