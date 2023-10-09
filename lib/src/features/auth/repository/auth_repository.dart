@@ -1,5 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_tdd/config/firebase/firebase_auth_error_text.dart';
+import 'package:firebase_tdd/config/util/firebase_auth_error_text.dart';
 import 'package:firebase_tdd/config/firebase/firebase_instance_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
