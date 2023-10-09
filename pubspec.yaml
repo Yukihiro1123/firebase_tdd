@@ -27,6 +27,7 @@ dependencies:
   firebase_auth_mocks:
   fake_cloud_firestore:
   mock_exceptions:
+  uuid:
 
 dev_dependencies:
   flutter_test:
