@@ -76,13 +76,7 @@ void main() {
     });
     group("正常系", () {
       testWidgets("フォームとボタンが画面に表示される", (widgetTester) async {
-        await widgetTester.pumpWidget(
-          ProviderScope(
-            child: MaterialApp.router(
-              routerConfig: loginViewRouter,
-            ),
-          ),
-        );
+        await widgetTester.pumpWidget(providerScope);
         await widgetTester.pumpAndSettle();
         final emailForm = find.byKey(const Key("loginEmailForm"));
         final passwordForm = find.byKey(const Key("loginPasswordForm"));
