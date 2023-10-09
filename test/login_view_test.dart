@@ -1,12 +1,7 @@
 import 'package:firebase_tdd/src/features/auth/controller/auth_controller.dart';
-import 'package:firebase_tdd/src/features/auth/view/auth_page.dart';
 import 'package:firebase_tdd/src/features/auth/view/login_view.dart';
-import 'package:firebase_tdd/src/features/todo/view/todo_list_page.dart';
-import 'package:firebase_tdd/src/routing/app_router.dart';
-import 'package:firebase_tdd/src/routing/router_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mocktail/mocktail.dart';
 
