@@ -11,23 +11,28 @@ class MockAuthController extends AutoDisposeNotifier<AsyncValue<dynamic>>
     implements AuthController {}
 
 void main() {
-  final mockAuthController = MockAuthController();
-  when(() => mockAuthController.signIn(
-          email: any(named: "email"), password: any(named: "password")))
-      .thenAnswer((_) => Future.value("success"));
   group("Widgetテスト", () {
+    late MockAuthController mockAuthController;
+    late ProviderScope providerScope;
+    setUp(() {
+      mockAuthController = MockAuthController();
+      providerScope = ProviderScope(
+        overrides: [
+          authControllerProvider.overrideWith(() => mockAuthController)
+        ],
+        child: MaterialApp.router(
+          routerConfig: loginViewRouter,
+        ),
+      );
+    });
+
+    tearDown(() {
+      reset(mockAuthController);
+    });
+
     group("異常系", () {
       testWidgets("入力された値のフォーマットが正しくない場合はエラーメッセージを返す", (widgetTester) async {
-        await widgetTester.pumpWidget(
-          ProviderScope(
-            overrides: [
-              authControllerProvider.overrideWith(() => mockAuthController)
-            ],
-            child: MaterialApp.router(
-              routerConfig: loginViewRouter,
-            ),
-          ),
-        );
+        await widgetTester.pumpWidget(providerScope);
         await widgetTester.pumpAndSettle();
         final emailForm = find.byKey(const Key("loginEmailForm"));
         await widgetTester.enterText(emailForm, '犬');
@@ -37,6 +42,36 @@ void main() {
         expect(find.text('入力してください'), findsOneWidget);
         verifyNever(() => mockAuthController.signIn(
             email: "example@gmail.com", password: "example12345"));
+      });
+
+      testWidgets("ユーザーが登録されていない場合エラーメッセージを返す", (widgetTester) async {
+        when(() => mockAuthController.signIn(
+                email: any(named: "email"), password: any(named: "password")))
+            .thenAnswer((_) => Future.value("指定されたユーザーは登録されていません。"));
+        await widgetTester.pumpWidget(providerScope);
+        await widgetTester.pumpAndSettle();
+        final emailForm = find.byKey(const Key("loginEmailForm"));
+        await widgetTester.enterText(emailForm, 'example@gmail.com');
+        final passwordForm = find.byKey(const Key("loginPasswordForm"));
+        await widgetTester.enterText(passwordForm, 'example12345');
+        await widgetTester.tap(find.byKey(const Key("loginButton")));
+        await widgetTester.pumpAndSettle();
+        expect(find.text('指定されたユーザーは登録されていません。'), findsOneWidget);
+      });
+
+      testWidgets("パスワードが違う場合はエラーメッセージを返す", (widgetTester) async {
+        when(() => mockAuthController.signIn(
+                email: any(named: "email"), password: any(named: "password")))
+            .thenAnswer((_) => Future.value("メールアドレス、またはパスワードが間違っています。"));
+        await widgetTester.pumpWidget(providerScope);
+        await widgetTester.pumpAndSettle();
+        final emailForm = find.byKey(const Key("loginEmailForm"));
+        await widgetTester.enterText(emailForm, 'example@gmail.com');
+        final passwordForm = find.byKey(const Key("loginPasswordForm"));
+        await widgetTester.enterText(passwordForm, 'example12345');
+        await widgetTester.tap(find.byKey(const Key("loginButton")));
+        await widgetTester.pumpAndSettle();
+        expect(find.text('メールアドレス、またはパスワードが間違っています。'), findsOneWidget);
       });
     });
     group("正常系", () {
@@ -59,16 +94,10 @@ void main() {
       });
       testWidgets("全てのフォームの入力形式が正しい場合はエラーは出ず、controllerが呼び出される",
           (widgetTester) async {
-        await widgetTester.pumpWidget(
-          ProviderScope(
-            overrides: [
-              authControllerProvider.overrideWith(() => mockAuthController)
-            ],
-            child: MaterialApp.router(
-              routerConfig: loginViewRouter,
-            ),
-          ),
-        );
+        when(() => mockAuthController.signIn(
+                email: any(named: "email"), password: any(named: "password")))
+            .thenAnswer((_) => Future.value("success"));
+        await widgetTester.pumpWidget(providerScope);
         await widgetTester.pumpAndSettle();
         final emailForm = find.byKey(const Key("loginEmailForm"));
         await widgetTester.enterText(emailForm, 'example@gmail.com');

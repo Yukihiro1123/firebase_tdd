@@ -11,23 +11,27 @@ class MockAuthController extends AutoDisposeNotifier<AsyncValue<dynamic>>
     implements AuthController {}
 
 void main() {
-  final mockAuthController = MockAuthController();
-  when(() => mockAuthController.register(
-          email: any(named: "email"), password: any(named: "password")))
-      .thenAnswer((_) => Future.value("success"));
   group("Widgetテスト", () {
+    late MockAuthController mockAuthController;
+    late ProviderScope providerScope;
+    setUp(() {
+      mockAuthController = MockAuthController();
+      providerScope = ProviderScope(
+        overrides: [
+          authControllerProvider.overrideWith(() => mockAuthController)
+        ],
+        child: MaterialApp.router(
+          routerConfig: registerViewRouter,
+        ),
+      );
+    });
+
+    tearDown(() {
+      reset(mockAuthController);
+    });
     group("異常系", () {
       testWidgets("入力された値のフォーマットが正しくない場合はエラーメッセージを返す", (widgetTester) async {
-        await widgetTester.pumpWidget(
-          ProviderScope(
-            overrides: [
-              authControllerProvider.overrideWith(() => mockAuthController)
-            ],
-            child: MaterialApp.router(
-              routerConfig: registerViewRouter,
-            ),
-          ),
-        );
+        await widgetTester.pumpWidget(providerScope);
         await widgetTester.pumpAndSettle();
         final emailForm = find.byKey(const Key("registerEmailForm"));
         await widgetTester.enterText(emailForm, '犬');
@@ -39,6 +43,21 @@ void main() {
         expect(find.text('8文字以上の英数字を入力してください'), findsOneWidget);
         verifyNever(() => mockAuthController.signIn(
             email: "example@gmail.com", password: "example12345"));
+      });
+
+      testWidgets("ユーザーが既に登録されている場合エラーメッセージを返す", (widgetTester) async {
+        when(() => mockAuthController.register(
+                email: any(named: "email"), password: any(named: "password")))
+            .thenAnswer((_) => Future.value("既に利用されているメールアドレスです。"));
+        await widgetTester.pumpWidget(providerScope);
+        await widgetTester.pumpAndSettle();
+        final emailForm = find.byKey(const Key("registerEmailForm"));
+        await widgetTester.enterText(emailForm, 'example@gmail.com');
+        final passwordForm = find.byKey(const Key("registerPasswordForm"));
+        await widgetTester.enterText(passwordForm, 'example12345');
+        await widgetTester.tap(find.byKey(const Key("registerButton")));
+        await widgetTester.pumpAndSettle();
+        expect(find.text('既に利用されているメールアドレスです。'), findsOneWidget);
       });
     });
     group("正常系", () {
@@ -61,16 +80,10 @@ void main() {
       });
       testWidgets("全てのフォームの入力形式が正しい場合、エラーは出ず、controllerが呼び出される",
           (widgetTester) async {
-        await widgetTester.pumpWidget(
-          ProviderScope(
-            overrides: [
-              authControllerProvider.overrideWith(() => mockAuthController)
-            ],
-            child: MaterialApp.router(
-              routerConfig: registerViewRouter,
-            ),
-          ),
-        );
+        when(() => mockAuthController.register(
+                email: any(named: "email"), password: any(named: "password")))
+            .thenAnswer((_) => Future.value("success"));
+        await widgetTester.pumpWidget(providerScope);
         await widgetTester.pumpAndSettle();
         final emailForm = find.byKey(const Key("registerEmailForm"));
         await widgetTester.enterText(emailForm, 'example@gmail.com');
