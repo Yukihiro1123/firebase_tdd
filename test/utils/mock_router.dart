@@ -32,7 +32,7 @@ final registerViewRouter = GoRouter(
       path: AppRoute.auth.path,
       name: AppRoute.auth.name,
       pageBuilder: (context, state) => const MaterialPage(
-        child: Material(child: Scaffold(body: RegisterView())),
+        child: RegisterView(),
       ),
     ),
     GoRoute(

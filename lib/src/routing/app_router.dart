@@ -38,15 +38,26 @@ GoRouter goRouter(GoRouterRef ref) {
         },
       ),
       GoRoute(
-        path: AppRoute.todo.path,
-        name: AppRoute.todo.name,
-        pageBuilder: (context, state) {
-          return NoTransitionPage(
-            key: state.pageKey,
-            child: const TodoListPage(),
-          );
-        },
-      ),
+          path: AppRoute.todo.path,
+          name: AppRoute.todo.name,
+          pageBuilder: (context, state) {
+            return NoTransitionPage(
+              key: state.pageKey,
+              child: const TodoListPage(),
+            );
+          },
+          routes: [
+            GoRoute(
+              path: AppRoute.addTodo.path,
+              name: AppRoute.addTodo.name,
+              pageBuilder: (context, state) {
+                return MaterialPage(
+                  key: state.pageKey,
+                  child: const AuthPage(),
+                );
+              },
+            ),
+          ]),
     ],
   );
 }

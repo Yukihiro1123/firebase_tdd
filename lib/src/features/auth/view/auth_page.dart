@@ -13,8 +13,8 @@ class AuthPage extends HookConsumerWidget {
         appBar: AppBar(
             bottom: const TabBar(
               tabs: [
-                Tab(icon: Icon(Icons.android), text: "Sign In"),
-                Tab(icon: Icon(Icons.phone_iphone), text: "Sign Up"),
+                Tab(text: "ログイン"),
+                Tab(text: "会員登録"),
               ],
             ),
             title: const Text('Welcome')),

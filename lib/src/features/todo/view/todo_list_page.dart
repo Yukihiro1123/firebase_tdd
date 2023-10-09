@@ -19,6 +19,10 @@ class TodoListPage extends HookConsumerWidget {
         ],
       ),
       body: const Text('Hi'),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {},
+        child: const Icon(Icons.add),
+      ),
     );
   }
 

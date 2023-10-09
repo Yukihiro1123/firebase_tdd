@@ -1,4 +1,3 @@
-import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:firebase_tdd/config/firebase/firebase_instance_provider.dart';
@@ -10,28 +9,30 @@ import 'package:mock_exceptions/mock_exceptions.dart';
 void main() {
   late ProviderContainer container;
   late MockFirebaseAuth mockFirebaseAuth;
-  late FakeFirebaseFirestore mockFirebaseFirestore;
+
+  //setup テストの実行前に行う共通の処理を記述
   setUp(() async {
-    TestWidgetsFlutterBinding.ensureInitialized();
+    // authをmock化
     mockFirebaseAuth = MockFirebaseAuth();
-    mockFirebaseFirestore = FakeFirebaseFirestore();
-    // authとfirestoreをmock化
+
     container = ProviderContainer(
       overrides: [
         firebaseAuthInstanceProvider.overrideWithValue(mockFirebaseAuth),
-        firebaseFireStoreInstanceProvider
-            .overrideWithValue(mockFirebaseFirestore),
       ],
     );
   });
 
+  //テストの実行後に実行される共通の処理を記述
   tearDown(() {
-    //テスト終了後はコンテナを破棄する
+    //コンテナを破棄する
     container.dispose();
   });
 
+  //group: テストケースをグループごとにまとめる
   group('email-passwordによるログイン処理', () {
     group('正常系', () {
+      //test(description, body)
+      //descriptionにはテストの名前、bodyにはテストしたい処理を書く
       test('会員登録が済んでいる状態でログインに成功するとcurrentUserにユーザーが設定され、successというメッセージが返る',
           () async {
         await container
