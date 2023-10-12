@@ -8,7 +8,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mock_exceptions/mock_exceptions.dart';
 import 'package:mocktail/mocktail.dart';
 
-import 'utils/listener.dart';
+import '../../../../utils/listener.dart';
 
 class MockAuthRepository extends AutoDisposeNotifier<User?>
     with Mock
