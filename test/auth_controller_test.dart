@@ -2,24 +2,36 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:firebase_tdd/config/firebase/firebase_instance_provider.dart';
 import 'package:firebase_tdd/src/features/auth/controller/auth_controller.dart';
+import 'package:firebase_tdd/src/features/auth/repository/auth_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mock_exceptions/mock_exceptions.dart';
+import 'package:mocktail/mocktail.dart';
+
+import 'utils/listener.dart';
+
+class MockAuthRepository extends AutoDisposeNotifier<User?>
+    with Mock
+    implements AuthRepository {}
 
 void main() {
   late ProviderContainer container;
   late MockFirebaseAuth mockFirebaseAuth;
+  late MockAuthRepository mockAuthRepository;
 
   //setup テストの実行前に行う共通の処理を記述
   setUp(() async {
     // authをmock化
     mockFirebaseAuth = MockFirebaseAuth();
+    mockAuthRepository = MockAuthRepository();
 
     container = ProviderContainer(
       overrides: [
         firebaseAuthInstanceProvider.overrideWithValue(mockFirebaseAuth),
+        authRepositoryProvider.overrideWith(() => mockAuthRepository)
       ],
     );
+    registerFallbackValue(const AsyncLoading<void>());
   });
 
   //テストの実行後に実行される共通の処理を記述
@@ -116,7 +128,24 @@ void main() {
 
   group('ログアウト処理', () {
     test('ログアウトに成功するとcurrentUserがnullになること', () async {
+      when(container.read(authRepositoryProvider.notifier).signOut)
+          .thenAnswer((_) => Future.value());
+      final listener = Listener<AsyncValue<void>>();
+      container.listen(
+        authControllerProvider,
+        listener,
+        fireImmediately: true,
+      );
+      const data = AsyncData<void>(null);
+      verify(() => listener(null, data));
       await container.read(authControllerProvider.notifier).signOut();
+      verifyInOrder([
+        () => listener(data, any(that: isA<AsyncLoading>())),
+        // data when complete
+        () => listener(any(that: isA<AsyncLoading>()), data),
+      ]);
+      verifyNoMoreInteractions(listener);
+      verify(container.read(authRepositoryProvider.notifier).signOut).called(1);
       final currentUser =
           container.read(firebaseAuthInstanceProvider).currentUser;
       expect(currentUser?.email, null);

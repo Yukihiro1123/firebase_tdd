@@ -6,7 +6,7 @@ import 'package:mocktail/mocktail.dart';
 
 import 'utils/mock_router.dart';
 
-class MockAuthController extends AutoDisposeNotifier<AsyncValue<dynamic>>
+class MockAuthController extends AutoDisposeAsyncNotifier<void>
     with Mock
     implements AuthController {}
 

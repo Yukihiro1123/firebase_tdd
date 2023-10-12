@@ -5,8 +5,8 @@ part 'auth_controller.g.dart';
 @riverpod
 class AuthController extends _$AuthController {
   @override
-  AsyncValue build() {
-    return const AsyncData(null);
+  FutureOr<void> build() {
+    //
   }
 
   Future<String> signIn({
@@ -17,7 +17,7 @@ class AuthController extends _$AuthController {
     final String result = await ref
         .read(authRepositoryProvider.notifier)
         .signIn(email: email, password: password);
-    state = const AsyncData(null);
+    state = const AsyncData<void>(null);
     return result;
   }
 
@@ -29,13 +29,13 @@ class AuthController extends _$AuthController {
     final result = await ref
         .read(authRepositoryProvider.notifier)
         .register(email: email, password: password);
-    state = const AsyncData(null);
+    state = const AsyncData<void>(null);
     return result;
   }
 
   Future<void> signOut() async {
     state = const AsyncLoading();
     await ref.read(authRepositoryProvider.notifier).signOut();
-    state = const AsyncData(null);
+    state = const AsyncData<void>(null);
   }
 }
