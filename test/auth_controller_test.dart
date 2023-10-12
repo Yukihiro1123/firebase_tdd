@@ -47,16 +47,29 @@ void main() {
       //descriptionにはテストの名前、bodyにはテストしたい処理を書く
       test('会員登録が済んでいる状態でログインに成功するとcurrentUserにユーザーが設定され、successというメッセージが返る',
           () async {
+        when(() => container.read(authRepositoryProvider.notifier).signIn(
+                email: any(named: "email"), password: any(named: "password")))
+            .thenAnswer((_) => Future.value("success"));
+        final listener = Listener<AsyncValue<void>>();
+        container.listen(
+          authControllerProvider,
+          listener,
+          fireImmediately: true,
+        );
+        const data = AsyncData<void>(null);
+        verify(() => listener(null, data));
         await container
             .read(authControllerProvider.notifier)
-            .register(email: 'bob@somedomain.com', password: 'bob12345');
-        final String response = await container
-            .read(authControllerProvider.notifier)
             .signIn(email: 'bob@somedomain.com', password: 'bob12345');
-        final currentUser =
-            container.read(firebaseAuthInstanceProvider).currentUser;
-        expect(currentUser!.email, "bob@somedomain.com");
-        expect(response, "success");
+        verifyInOrder([
+          () => listener(data, any(that: isA<AsyncLoading>())),
+          // data when complete
+          () => listener(any(that: isA<AsyncLoading>()), data),
+        ]);
+        verifyNoMoreInteractions(listener);
+        verify(() => container.read(authRepositoryProvider.notifier).signIn(
+            email: any(named: "email"),
+            password: any(named: "password"))).called(1);
       });
     });
     group('異常系', () {
@@ -95,13 +108,29 @@ void main() {
   group('email-passwordによる会員登録処理', () {
     group('正常系', () {
       test('会員登録に成功するとcurrentUserにユーザーが設定され、successというメッセージが返る', () async {
-        final String response = await container
+        when(() => container.read(authRepositoryProvider.notifier).register(
+                email: any(named: "email"), password: any(named: "password")))
+            .thenAnswer((_) => Future.value("success"));
+        final listener = Listener<AsyncValue<void>>();
+        container.listen(
+          authControllerProvider,
+          listener,
+          fireImmediately: true,
+        );
+        const data = AsyncData<void>(null);
+        verify(() => listener(null, data));
+        await container
             .read(authControllerProvider.notifier)
             .register(email: 'bob@somedomain.com', password: 'bob12345');
-        final currentUser =
-            container.read(firebaseAuthInstanceProvider).currentUser;
-        expect(currentUser!.email, "bob@somedomain.com");
-        expect(response, "success");
+        verifyInOrder([
+          () => listener(data, any(that: isA<AsyncLoading>())),
+          // data when complete
+          () => listener(any(that: isA<AsyncLoading>()), data),
+        ]);
+        verifyNoMoreInteractions(listener);
+        verify(() => container.read(authRepositoryProvider.notifier).register(
+            email: any(named: "email"),
+            password: any(named: "password"))).called(1);
       });
     });
     group('異常系', () {

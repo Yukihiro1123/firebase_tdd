@@ -10,34 +10,32 @@ part 'todo_controller.g.dart';
 @riverpod
 class TodoController extends _$TodoController {
   @override
-  AsyncValue build() {
-    return const AsyncData(null);
-  }
+  FutureOr<void> build() {}
 
   Future<void> addTodo(String title) async {
-    state = const AsyncLoading();
+    state = const AsyncLoading<void>();
     final newTodo = Todo(
       id: const Uuid().v4(),
       title: title,
       createdAt: Timestamp.now(),
     );
     await ref.read(todoRepositoryProvider.notifier).addTodo(newTodo);
-    state = const AsyncData(null);
+    state = const AsyncData<void>(null);
   }
 
   Future<void> updateTodo(Todo todo, String title) async {
-    state = const AsyncLoading();
+    state = const AsyncLoading<void>();
     final Todo editTodoData = todo.copyWith(
       title: title,
     );
     await ref.read(todoRepositoryProvider.notifier).updateTodo(editTodoData);
-    state = const AsyncData(null);
+    state = const AsyncData<void>(null);
   }
 
   Future<void> deleteTodo(String id) async {
-    state = const AsyncLoading();
+    state = const AsyncLoading<void>();
     await ref.read(todoRepositoryProvider.notifier).deleteTodo(id);
-    state = const AsyncData(null);
+    state = const AsyncData<void>(null);
   }
 }
 

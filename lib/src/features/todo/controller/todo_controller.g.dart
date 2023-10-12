@@ -23,12 +23,12 @@ final watchTodoListControllerProvider =
 );
 
 typedef WatchTodoListControllerRef = AutoDisposeStreamProviderRef<List<Todo>>;
-String _$todoControllerHash() => r'13fa869ea8e73d18970dee444690bc58ae632639';
+String _$todoControllerHash() => r'22a3646f63fd24712cc0217ee9bc2209814f84e3';
 
 /// See also [TodoController].
 @ProviderFor(TodoController)
 final todoControllerProvider =
-    AutoDisposeNotifierProvider<TodoController, AsyncValue<dynamic>>.internal(
+    AutoDisposeAsyncNotifierProvider<TodoController, void>.internal(
   TodoController.new,
   name: r'todoControllerProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
@@ -38,7 +38,7 @@ final todoControllerProvider =
   allTransitiveDependencies: null,
 );
 
-typedef _$TodoController = AutoDisposeNotifier<AsyncValue<dynamic>>;
+typedef _$TodoController = AutoDisposeAsyncNotifier<void>;
 String _$todoListLimitControllerHash() =>
     r'ffa242e63a7744854ac01849bf42329a6c8988c8';
 
