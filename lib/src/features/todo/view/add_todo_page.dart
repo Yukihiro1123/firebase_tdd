@@ -1,3 +1,4 @@
+import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:firebase_tdd/src/features/todo/controller/todo_controller.dart';
 import 'package:firebase_tdd/src/routing/router_utils.dart';
 import 'package:flutter/material.dart';
@@ -60,12 +61,20 @@ class AddTodoPage extends HookConsumerWidget {
     if (!formKey.currentState!.validate()) {
       return;
     }
-    await ref.read(todoControllerProvider.notifier).addTodo(title);
-    if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text("タスクを追加しました"),
-      ));
-      context.goNamed(AppRoute.todo.name);
+    final result = await showOkCancelAlertDialog(
+      context: context,
+      okLabel: 'はい',
+      cancelLabel: 'いいえ',
+      title: 'タスクを追加しますか？',
+    );
+    if (result == OkCancelResult.ok) {
+      await ref.read(todoControllerProvider.notifier).addTodo(title);
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text("タスクを追加しました"),
+        ));
+        context.goNamed(AppRoute.todo.name);
+      }
     }
   }
 }
