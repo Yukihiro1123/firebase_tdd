@@ -1,6 +1,7 @@
 import 'package:firebase_tdd/src/features/auth/controller/current_user_controller.dart';
 import 'package:firebase_tdd/src/features/auth/repository/auth_repository.dart';
 import 'package:firebase_tdd/src/features/auth/view/auth_page.dart';
+import 'package:firebase_tdd/src/features/todo/view/add_todo_page.dart';
 import 'package:firebase_tdd/src/features/todo/view/todo_list_page.dart';
 import 'package:firebase_tdd/src/routing/go_router_refresh_stream.dart';
 import 'package:flutter/material.dart';
@@ -53,7 +54,7 @@ GoRouter goRouter(GoRouterRef ref) {
               pageBuilder: (context, state) {
                 return MaterialPage(
                   key: state.pageKey,
-                  child: const AuthPage(),
+                  child: const AddTodoPage(),
                 );
               },
             ),

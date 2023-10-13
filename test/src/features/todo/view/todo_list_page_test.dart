@@ -5,7 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockAuthController extends AutoDisposeAsyncNotifier<void>
+class MockAuthController extends AutoDisposeNotifier<AsyncValue<dynamic>>
     with Mock
     implements AuthController {}
 

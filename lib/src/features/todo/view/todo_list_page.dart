@@ -1,9 +1,13 @@
 import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:firebase_tdd/src/features/auth/controller/auth_controller.dart';
+import 'package:firebase_tdd/src/features/todo/controller/todo_controller.dart';
+import 'package:firebase_tdd/src/features/todo/data_model/todo.dart';
+import 'package:firebase_tdd/src/routing/router_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class TodoListPage extends HookConsumerWidget {
+class TodoListPage extends ConsumerWidget {
   const TodoListPage({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -18,9 +22,33 @@ class TodoListPage extends HookConsumerWidget {
           )
         ],
       ),
-      body: const Text('Hi'),
+      body: ref.watch(watchTodoListControllerProvider).when(
+        data: (List<Todo> todoList) {
+          return todoList.isEmpty
+              ? const Center(child: Text('データが存在しません'))
+              : ListView.separated(
+                  itemBuilder: (context, index) {
+                    final Todo todo = todoList[index];
+                    return ListTile(
+                      title: Text(todo.title),
+                    );
+                  },
+                  separatorBuilder: (context, index) =>
+                      const Divider(height: 0.5),
+                  itemCount: todoList.length,
+                );
+        },
+        loading: () {
+          return const Center(child: CircularProgressIndicator());
+        },
+        error: (error, stackTrace) {
+          return const Center(child: Text('todoリスト取得時にエラーが発生しました'));
+        },
+      ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          goToAddTodoPage(context);
+        },
         child: const Icon(Icons.add),
       ),
     );
@@ -36,8 +64,18 @@ class TodoListPage extends HookConsumerWidget {
         title: 'ログアウトしますか？',
       );
       if (result == OkCancelResult.ok) {
+        // final sub =
+        //     ref.listenManual(authControllerProvider.notifier, (_, __) {});
+        // await sub.read().signOut();
+        // sub.close();
         await ref.read(authControllerProvider.notifier).signOut();
       }
+    }
+  }
+
+  void goToAddTodoPage(BuildContext context) {
+    if (context.mounted) {
+      context.goNamed(AppRoute.addTodo.name);
     }
   }
 }

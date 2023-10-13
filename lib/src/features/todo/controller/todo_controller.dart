@@ -10,7 +10,9 @@ part 'todo_controller.g.dart';
 @riverpod
 class TodoController extends _$TodoController {
   @override
-  FutureOr<void> build() {}
+  AsyncValue build() {
+    return const AsyncData(null);
+  }
 
   Future<void> addTodo(String title) async {
     state = const AsyncLoading<void>();
