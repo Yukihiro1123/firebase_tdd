@@ -1,4 +1,5 @@
 enum FirebaseAuthError {
+  invalidLoginCredentials,
   userNotFound,
   userDisabled,
   requiresRecentLogin,
@@ -19,6 +20,7 @@ extension FirebaseAuthErrorExt on FirebaseAuthError {
   /// 表示用メッセージ一覧
   static final _messages = {
     FirebaseAuthError.userNotFound: "指定されたユーザーは登録されていません。",
+    FirebaseAuthError.invalidLoginCredentials: "指定されたユーザーは登録されていません。",
     FirebaseAuthError.userDisabled: "指定されたユーザーは無効化されています。",
     FirebaseAuthError.requiresRecentLogin:
         "アカウント削除などのセキュアな操作を行うにはログインによる再認証が必要です。",
@@ -39,6 +41,8 @@ extension FirebaseAuthErrorExt on FirebaseAuthError {
     switch (code) {
       case 'user-not-found':
         return FirebaseAuthError.userNotFound;
+      case 'invalid-login-credentials':
+        return FirebaseAuthError.invalidLoginCredentials;
       case 'user-disabled':
         return FirebaseAuthError.userDisabled;
       case 'requires-recent-login':

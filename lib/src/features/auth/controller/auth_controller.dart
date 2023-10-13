@@ -17,7 +17,6 @@ class AuthController extends _$AuthController {
     final String result = await ref
         .read(authRepositoryProvider.notifier)
         .signIn(email: email, password: password);
-    state = const AsyncData<void>(null);
     return result;
   }
 
@@ -29,13 +28,12 @@ class AuthController extends _$AuthController {
     final result = await ref
         .read(authRepositoryProvider.notifier)
         .register(email: email, password: password);
-    state = const AsyncData<void>(null);
     return result;
   }
 
   Future<void> signOut() async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(
-        () => ref.read(authRepositoryProvider.notifier).signOut());
+        ref.read(authRepositoryProvider.notifier).signOut);
   }
 }
