@@ -14,6 +14,7 @@ class LoginView extends HookConsumerWidget {
     final formKey = useMemoized(() => GlobalKey<FormState>());
     final emailController = useTextEditingController();
     final passwordController = useTextEditingController();
+    final state = ref.watch(authControllerProvider);
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -52,15 +53,19 @@ class LoginView extends HookConsumerWidget {
               ElevatedButton(
                 key: const Key("loginButton"),
                 onPressed: () {
-                  login(
-                    context,
-                    ref,
-                    formKey,
-                    emailController.text,
-                    passwordController.text,
-                  );
+                  state.isLoading
+                      ? null
+                      : login(
+                          context,
+                          ref,
+                          formKey,
+                          emailController.text,
+                          passwordController.text,
+                        );
                 },
-                child: const Text('Log In'),
+                child: state.isLoading
+                    ? const CircularProgressIndicator()
+                    : const Text('ログイン'),
               )
             ],
           ),

@@ -14,6 +14,7 @@ class RegisterView extends HookConsumerWidget {
     final formKey = useMemoized(() => GlobalKey<FormState>());
     final emailController = useTextEditingController();
     final passwordController = useTextEditingController();
+    final state = ref.watch(authControllerProvider);
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
@@ -58,15 +59,19 @@ class RegisterView extends HookConsumerWidget {
                 ElevatedButton(
                   key: const Key("registerButton"),
                   onPressed: () {
-                    register(
-                      context: context,
-                      ref: ref,
-                      formKey: formKey,
-                      email: emailController.text,
-                      password: passwordController.text,
-                    );
+                    state.isLoading
+                        ? null
+                        : register(
+                            context: context,
+                            ref: ref,
+                            formKey: formKey,
+                            email: emailController.text,
+                            password: passwordController.text,
+                          );
                   },
-                  child: const Text('会員登録'),
+                  child: state.isLoading
+                      ? const CircularProgressIndicator()
+                      : const Text('会員登録'),
                 )
               ],
             ),
