@@ -2,6 +2,7 @@ enum AppRoute {
   auth,
   todo,
   addTodo,
+  editTodo,
 }
 
 extension AppRouteExtention on AppRoute {
@@ -13,6 +14,8 @@ extension AppRouteExtention on AppRoute {
         return '/todo';
       case AppRoute.addTodo:
         return 'new';
+      case AppRoute.editTodo:
+        return ':id';
     }
   }
 }
