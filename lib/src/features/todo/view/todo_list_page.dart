@@ -29,8 +29,19 @@ class TodoListPage extends ConsumerWidget {
               : ListView.separated(
                   itemBuilder: (context, index) {
                     final Todo todo = todoList[index];
-                    return ListTile(
-                      title: Text(todo.title),
+                    return InkWell(
+                      onTap: () {
+                        goToEditTodoPage(context, todo.id);
+                      },
+                      child: ListTile(
+                        title: Text(todo.title),
+                        trailing: IconButton(
+                          icon: const Icon(Icons.delete),
+                          onPressed: () {
+                            deleteTodo(context, ref, todo.id);
+                          },
+                        ),
+                      ),
                     );
                   },
                   separatorBuilder: (context, index) =>
@@ -73,9 +84,38 @@ class TodoListPage extends ConsumerWidget {
     }
   }
 
+  void goToEditTodoPage(BuildContext context, String id) {
+    if (context.mounted) {
+      context.goNamed(AppRoute.editTodo.name, pathParameters: {"id": id});
+    }
+  }
+
   void goToAddTodoPage(BuildContext context) {
     if (context.mounted) {
       context.goNamed(AppRoute.addTodo.name);
+    }
+  }
+
+  Future<void> deleteTodo(
+    BuildContext context,
+    WidgetRef ref,
+    String id,
+  ) async {
+    if (context.mounted) {
+      final result = await showOkCancelAlertDialog(
+        context: context,
+        okLabel: 'はい',
+        cancelLabel: 'いいえ',
+        title: 'タスクを削除しますか？',
+      );
+      if (result == OkCancelResult.ok) {
+        await ref.read(todoControllerProvider.notifier).deleteTodo(id);
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text("タスクを更新しました"),
+          ));
+        }
+      }
     }
   }
 }

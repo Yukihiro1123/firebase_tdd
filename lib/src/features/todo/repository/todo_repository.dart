@@ -49,4 +49,9 @@ class TodoRepository extends _$TodoRepository {
   Future<void> addTodo(Todo addTodoData) async {
     await state.doc(addTodoData.id).set(addTodoData);
   }
+
+  Future<Todo> getTodo(String id) async {
+    final todoDoc = await state.doc(id).get();
+    return todoDoc.data()!;
+  }
 }

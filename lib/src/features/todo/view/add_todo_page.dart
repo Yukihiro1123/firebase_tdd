@@ -6,7 +6,8 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class AddTodoPage extends HookConsumerWidget {
-  const AddTodoPage({super.key});
+  final String? id;
+  const AddTodoPage({super.key, this.id});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final formKey = useMemoized(() => GlobalKey<FormState>());
@@ -41,7 +42,7 @@ class AddTodoPage extends HookConsumerWidget {
                     titleController.text,
                   );
                 },
-                child: const Text('Add Todo'),
+                child: const Text('タスクの追加'),
               )
             ],
           ),

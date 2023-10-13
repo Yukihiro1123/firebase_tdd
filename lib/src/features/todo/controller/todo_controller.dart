@@ -11,7 +11,11 @@ part 'todo_controller.g.dart';
 class TodoController extends _$TodoController {
   @override
   AsyncValue build() {
-    return const AsyncData(null);
+    return const AsyncData<void>(null);
+  }
+
+  Future<Todo> getTodo(String id) async {
+    return ref.read(todoRepositoryProvider.notifier).getTodo(id);
   }
 
   Future<void> addTodo(String title) async {
@@ -39,6 +43,11 @@ class TodoController extends _$TodoController {
     await ref.read(todoRepositoryProvider.notifier).deleteTodo(id);
     state = const AsyncData<void>(null);
   }
+}
+
+@riverpod
+Future<Todo> watchTodoController(WatchTodoControllerRef ref, String id) {
+  return ref.read(todoRepositoryProvider.notifier).getTodo(id);
 }
 
 @riverpod
